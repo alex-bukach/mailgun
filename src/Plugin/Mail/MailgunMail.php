@@ -21,7 +21,7 @@ use Drupal\Component\Utility\Html;
  * )
  */
 class MailgunMail implements MailInterface {
-
+  
   /**
    * Concatenate and wrap the e-mail body for either plain-text or HTML e-mails.
    *
@@ -69,12 +69,17 @@ class MailgunMail implements MailInterface {
       'html' => $message['body'],
     );
 
-    // Add the CC and BCC fields if not empty.
-    if (!empty($message['params']['cc'])) {
-      $mailgun_message['cc'] = $message['params']['cc'];
+    // Add CC, BCC and Reply-To fields if not empty.
+    $headers = array_change_key_case($message['headers']);
+
+    if (!empty($headers['cc'])) {
+      $mailgun_message['cc'] = $headers['cc'];
     }
-    if (!empty($message['params']['bcc'])) {
-      $mailgun_message['bcc'] = $message['params']['bcc'];
+    if (!empty($headers['bcc'])) {
+      $mailgun_message['bcc'] = $headers['bcc'];
+    }
+    if (!empty($headers['reply-to'])) {
+      $mailgun_message['h:Reply-To'] = $headers['reply-to'];
     }
 
     $params = array();

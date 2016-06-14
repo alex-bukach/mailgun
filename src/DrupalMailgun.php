@@ -42,6 +42,11 @@ class DrupalMailgun extends Mailgun {
   private $debugMode;
 
   /**
+   * @var bool
+   */
+  private $testMode;
+
+  /**
    * Logger service.
    *
    * @var \Drupal\Core\Logger\LoggerChannelInterface
@@ -69,6 +74,7 @@ class DrupalMailgun extends Mailgun {
     
     $this->workingDomain = $this->config->get('working_domain');
     $this->debugMode = $this->config->get('debug_mode');
+    $this->testMode = $this->config->get('test_mode');
 
 
     /** @var LoggerInterface logger */
@@ -104,18 +110,22 @@ class DrupalMailgun extends Mailgun {
    *   TRUE if the mail was successfully accepted, FALSE otherwise.
    */
   function send($mailgun_message) {
+    
+    // Attachments
+    $post_data = array();
+    if (!empty($mailgun_message['attachments'])) {
+      // Send message with attachments.
+      $post_data['attachment'] = $mailgun_message['attachments'];
+      unset($mailgun_message['attachments']);
+    }
+
+    // Test mode
+    if ($this->testMode) {
+      $mailgun_message['o:testmode'] = 'yes';
+    }
 
     try {
-      if (!empty($mailgun_message['attachments'])) {
-        // Send message with attachments.
-        $attachments = $mailgun_message['attachments'];
-        unset($mailgun_message['attachments']);
-        $result = $this->sendMessage($this->workingDomain, $mailgun_message, ['attachment' => $attachments]);
-      }
-      else {
-        // Just good old mail with no attachment.
-        $result = $this->sendMessage($this->workingDomain, $mailgun_message);
-      }
+      $result = $this->sendMessage($this->workingDomain, $mailgun_message, $post_data);
 
       // For a list of HTTP response codes, see: https://documentation.mailgun.com/api-intro.html#errors.
       if ($result->http_response_code == 200) {

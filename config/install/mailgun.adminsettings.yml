@@ -3,3 +3,4 @@ api_key: ''
 api_endpoint: ''
 working_domain: ''
 debug_mode: true
+test_mode: false

@@ -71,6 +71,12 @@ class MailgunAdminSettingsForm extends ConfigFormBase {
       '#default_value' => $config->get('debug_mode'),
     );
 
+    $form['test_mode'] = array(
+      '#title' => t('Enable Test Mode'),
+      '#type' => 'checkbox',
+      '#default_value' => $config->get('test_mode'),
+    );
+
     return parent::buildForm($form, $form_state);
   }
 
@@ -91,6 +97,7 @@ class MailgunAdminSettingsForm extends ConfigFormBase {
       ->set('api_endpoint', $form_state->getValue('api_endpoint'))
       ->set('working_domain', $form_state->getValue('working_domain'))
       ->set('debug_mode', $form_state->getValue('debug_mode'))
+      ->set('test_mode', $form_state->getValue('test_mode'))
       ->save();
 
     drupal_set_message($this->t('The configuration options have been saved.'));

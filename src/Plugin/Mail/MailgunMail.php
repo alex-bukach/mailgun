@@ -12,7 +12,7 @@ use Drupal\mailgun\DrupalMailgun;
 use Drupal\Component\Utility\Html;
 
 /**
- * Modify the Drupal mail system to use Mandrill when sending emails.
+ * Modify the Drupal mail system to use Mailgunl when sending emails.
  *
  * @Mail(
  *   id = "mailgun_mail",
